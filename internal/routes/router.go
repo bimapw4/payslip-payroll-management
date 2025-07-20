@@ -12,6 +12,7 @@ func Routes(app *fiber.App, handler handlers.Handlers, m *middleware.Authenticat
 	routes := []func(app *fiber.App, handler handlers.Handlers, m *middleware.Authentication){
 		AuthRouter,
 		AttendanceRouter,
+		PayrollRouter,
 	}
 
 	for _, route := range routes {
