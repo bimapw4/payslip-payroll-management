@@ -8,12 +8,12 @@ import (
 	"payslips/internal/business"
 	"payslips/internal/handlers"
 	"payslips/internal/middleware"
-	"payslips/internal/provider"
 	"payslips/internal/repositories"
 	"payslips/internal/routes"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
 func main() {
@@ -31,11 +31,13 @@ func main() {
 	db := bootstrap.ConnectDB()
 	bootstrap.RunMigrations(db)
 
-	providercfg := bootstrap.Provider()
-	provider := provider.NewProvider(providercfg)
+	app.Use(requestid.New())
+
+	// providercfg := bootstrap.Provider()
+	// provider := provider.NewProvider(providercfg)
 
 	repo := repositories.NewRepository(db)
-	business := business.NewBusiness(&repo, provider)
+	business := business.NewBusiness(&repo)
 	handler := handlers.NewHandler(business)
 	middleware := middleware.NewAuthentication(business)
 

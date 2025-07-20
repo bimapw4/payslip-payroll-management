@@ -5,12 +5,13 @@ import (
 )
 
 type Response struct {
-	Status  string      `json:"status"`
-	Entity  string      `json:"entity"`
-	Message string      `json:"message"`
-	Meta    interface{} `json:"meta,omitempty"`
-	Data    interface{} `json:"data,omitempty"`
-	Error   interface{} `json:"error,omitempty"`
+	Status    string      `json:"status"`
+	Entity    string      `json:"entity"`
+	Message   string      `json:"message"`
+	Requestid string      `json:"request_id"`
+	Meta      interface{} `json:"meta,omitempty"`
+	Data      interface{} `json:"data,omitempty"`
+	Error     interface{} `json:"error,omitempty"`
 }
 
 func NewResponse(entity string) *Response {
@@ -42,5 +43,8 @@ func (r *Response) Errors(message string, err interface{}) *Response {
 }
 
 func (r *Response) JSON(c *fiber.Ctx, statusCode int) error {
+	reqID := c.Locals("requestid").(string)
+	r.Requestid = reqID
+
 	return c.Status(statusCode).JSON(r)
 }
