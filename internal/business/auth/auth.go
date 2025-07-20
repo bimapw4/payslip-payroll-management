@@ -25,6 +25,7 @@ type business struct {
 func NewBusiness(repo *repositories.Repository) Contract {
 	return &business{
 		repo: repo,
+		jwt:  common.NewJwt(),
 	}
 }
 
