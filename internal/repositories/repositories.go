@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"payslips/internal/repositories/attendance"
+	"payslips/internal/repositories/payroll"
 	"payslips/internal/repositories/users"
 
 	"github.com/jmoiron/sqlx"
@@ -10,11 +11,13 @@ import (
 type Repository struct {
 	Users      users.Users
 	Attendance attendance.Attendance
+	Payroll    payroll.Payroll
 }
 
 func NewRepository(db *sqlx.DB) Repository {
 	return Repository{
 		Users:      users.NewRepo(db),
 		Attendance: attendance.NewRepo(db),
+		Payroll:    payroll.NewRepo(db),
 	}
 }
