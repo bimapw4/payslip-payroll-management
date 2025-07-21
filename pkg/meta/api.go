@@ -23,13 +23,14 @@ func NewParams(queries map[string]string) Params {
 }
 
 type Pagination struct {
-	OrderType  string `json:"order_type"`
-	OrderBy    string `json:"order_by"`
-	Page       int    `json:"page"`
-	PerPage    int    `json:"per_page"`
-	TotalItems int    `json:"total_items"`
-	SearchBy   string `json:"search_by"`
-	Search     string `json:"search"`
+	OrderType        string `json:"order_type"`
+	OrderBy          string `json:"order_by"`
+	Page             int    `json:"page"`
+	PerPage          int    `json:"per_page"`
+	TotalItems       int    `json:"total_items"`
+	TotalTakeHomePay int    `json:"total_take_home_pay,omitempty"`
+	SearchBy         string `json:"search_by"`
+	Search           string `json:"search"`
 }
 
 // NewPagination initializes pagination info
@@ -75,8 +76,6 @@ func newPagination(query url.Values) Pagination {
 
 		p.Page = v
 	}
-
-	// p.TotalPages = int(math.Ceil(float64(p.TotalItems) / float64(p.PerPage)))
 
 	return p
 }
