@@ -12,4 +12,5 @@ type Users interface {
 	Update(ctx context.Context, payload presentations.Users) error
 	DeleteUser(ctx context.Context, userID, updatedBy string) error
 	GetUserByUsername(ctx context.Context, username string) (*presentations.Users, error)
+	GetAllUsers(ctx context.Context) ([]presentations.Users, error)
 }
