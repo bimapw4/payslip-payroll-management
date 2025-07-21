@@ -13,6 +13,7 @@ import (
 type Handler interface {
 	Create(c *fiber.Ctx) error
 	Running(c *fiber.Ctx) error
+	GeneratePayslip(c *fiber.Ctx) error
 }
 
 type handler struct {
@@ -75,5 +76,28 @@ func (h *handler) Running(c *fiber.Ctx) error {
 
 	return response.NewResponse(Entity).
 		Success("Success Running Payroll", nil).
+		JSON(c, fiber.StatusOK)
+}
+
+func (h *handler) GeneratePayslip(c *fiber.Ctx) error {
+	var (
+		Entity = "GeneratePayslip"
+	)
+
+	if err := validation.Validate(c.Params("id"), is.UUID); err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", err.Error()).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	result, err := h.business.Payroll.GeneratePayslip(c.UserContext(), c.Params("id"))
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	return response.NewResponse(Entity).
+		Success("Success Payroll Generate Payslip", result).
 		JSON(c, fiber.StatusOK)
 }
