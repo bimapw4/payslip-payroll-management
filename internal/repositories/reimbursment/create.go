@@ -9,7 +9,7 @@ import (
 func (r *repo) Create(ctx context.Context, input presentations.Reimbursement) error {
 
 	query := `
-    INSERT INTO reimbursment (
+    INSERT INTO reimbursement (
         id, user_id, amount, description, attachment, created_at, updated_at, created_by, updated_by
     ) VALUES (
         :id, :user_id, :amount, :description, :attachment, :created_at, :updated_at, :created_by, :updated_by

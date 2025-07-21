@@ -9,7 +9,7 @@ import (
 func (r *repo) Update(ctx context.Context, payload presentations.Reimbursement) error {
 
 	query := `
-		update reimbursment set 
+		update reimbursement set 
 			amount=:amount, 
 			description=:description, 
 			attachment=:attachment, 

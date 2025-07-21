@@ -151,7 +151,7 @@ func (h *handler) Update(c *fiber.Ctx) error {
 }
 
 func (h *handler) Preview(c *fiber.Ctx) error {
-	detail, err := h.business.Reimbursment.Detail(c.Context(), c.Params("id"))
+	detail, err := h.business.Reimbursment.Detail(c.UserContext(), c.Params("id"))
 	if err != nil {
 		return response.NewResponse("ReimbursmentPreview").
 			Errors("Failed to fetch reservation", err).

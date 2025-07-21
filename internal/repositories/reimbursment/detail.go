@@ -10,7 +10,7 @@ func (r *repo) Detail(ctx context.Context, id string) (*presentations.Reimbursem
 		result = presentations.Reimbursement{}
 	)
 
-	query := `SELECT * FROM reimbursment where id=:id`
+	query := `SELECT * FROM reimbursement where id=:id`
 
 	args := map[string]interface{}{
 		"id": id,
