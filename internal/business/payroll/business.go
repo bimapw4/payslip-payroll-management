@@ -13,6 +13,7 @@ import (
 type Contract interface {
 	CreatePayroll(ctx context.Context, payload entity.Payroll) error
 	RunningPayroll(ctx context.Context, payrollID string) error
+	GeneratePayslip(ctx context.Context, payrollID string) (*presentations.PayslipResponse, error)
 }
 
 type business struct {
@@ -77,15 +78,67 @@ func (b *business) RunningPayroll(ctx context.Context, payrollID string) error {
 	return nil
 }
 
-func (b *business) GeneratePayslip(ctx context.Context, payrollID string) error {
-	// userctx := common.GetUserCtx(ctx)
+func (b *business) GeneratePayslip(ctx context.Context, payrollID string) (*presentations.PayslipResponse, error) {
+	userctx := common.GetUserCtx(ctx)
 
-	// payroll, err := b.repo.Payroll.Detail(ctx, payrollID)
-	// if err != nil {
-	// 	return err
-	// }
+	user, err := b.repo.Users.Detail(ctx, userctx.UserID)
+	if err != nil {
+		return nil, err
+	}
 
-	// b.repo.Attendance.Detail()
+	payroll, err := b.repo.Payroll.Detail(ctx, payrollID)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil
+	attendance, err := b.repo.Attendance.FindByPayrollID(ctx, userctx.UserID, payrollID)
+	if err != nil {
+		return nil, err
+	}
+
+	reimbursements, err := b.repo.Reimbursement.FindByPayrollID(ctx, userctx.UserID, payrollID)
+	if err != nil {
+		return nil, err
+	}
+
+	overtimes, err := b.repo.Overtime.FindByPayrollID(ctx, userctx.UserID, payrollID)
+	if err != nil {
+		return nil, err
+	}
+
+	// attendance
+	workingDays := common.CountWorkingDays(payroll.PeriodStart, payroll.PeriodEnd)
+	proratedSalary := (user.Salary / workingDays) * len(attendance)
+
+	// reimbursement
+	totalReimb := presentations.SumReimbursement(reimbursements)
+
+	//overtime
+	totalOvertimeHours := presentations.SumOvertime(overtimes)
+	overtimeRate := float64(user.Salary) / float64(workingDays) / 8 * 2
+	overtimePay := overtimeRate * totalOvertimeHours
+
+	totalTakeHome := int(float64(proratedSalary) + overtimePay + totalReimb)
+
+	response := presentations.PayslipResponse{
+		PayrollID: payrollID,
+		Period: presentations.Period{
+			Start: payroll.PeriodStart,
+			End:   payroll.PeriodEnd,
+		},
+		Attendance: presentations.AttendanceBreakdown{
+			WorkingDays:    workingDays,
+			PresentDays:    len(attendance),
+			AbsentDays:     workingDays - len(attendance),
+			ProratedSalary: proratedSalary,
+		},
+		Overtime: presentations.OvertimeBreakdown{
+			TotalHours:  totalOvertimeHours,
+			OvertimePay: int(overtimePay),
+		},
+		Reimbursements: reimbursements,
+		TotalTakeHome:  totalTakeHome,
+	}
+
+	return &response, nil
 }
