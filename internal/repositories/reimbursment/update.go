@@ -22,7 +22,6 @@ func (r *repo) Update(ctx context.Context, payload presentations.Reimbursement) 
 		"id":          payload.ID,
 		"amount":      payload.Amount,
 		"description": payload.Description,
-		"attachment":  payload.Attachment,
 		"updated_at":  time.Now(),
 		"updated_by":  payload.UpdatedBy,
 	})

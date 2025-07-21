@@ -9,6 +9,5 @@ import (
 
 func ReimbursementRouter(app *fiber.App, handler handlers.Handlers, m *middleware.Authentication) {
 	app.Post("/reimbursment", m.Authentication, handler.Reimbursement.Create)
-	app.Put("/reimbursment/:id", m.Authentication, handler.Reimbursement.Update)
-	app.Get("/reimbursment/attachment/:id", m.Authentication, handler.Reimbursement.Preview)
+	app.Put("/reimbursment", m.Authentication, handler.Reimbursement.Update)
 }

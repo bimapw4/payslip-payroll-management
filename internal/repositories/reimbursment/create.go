@@ -10,9 +10,9 @@ func (r *repo) Create(ctx context.Context, input presentations.Reimbursement) er
 
 	query := `
     INSERT INTO reimbursement (
-        id, user_id, amount, description, attachment, created_at, updated_at, created_by, updated_by
+        id, user_id, amount, description, created_at, updated_at, created_by, updated_by
     ) VALUES (
-        :id, :user_id, :amount, :description, :attachment, :created_at, :updated_at, :created_by, :updated_by
+        :id, :user_id, :amount, :description, :created_at, :updated_at, :created_by, :updated_by
     )`
 
 	_, err := r.db.NamedExecContext(ctx, query, map[string]interface{}{
@@ -20,7 +20,6 @@ func (r *repo) Create(ctx context.Context, input presentations.Reimbursement) er
 		"user_id":     input.UserID,
 		"amount":      input.Amount,
 		"description": input.Description,
-		"attachment":  input.Attachment,
 		"created_at":  time.Now(),
 		"updated_at":  time.Now(),
 		"created_by":  input.CreatedBy,

@@ -6,7 +6,6 @@ import (
 	"payslips/internal/entity"
 	"payslips/internal/presentations"
 	"payslips/internal/repositories"
-	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,13 +31,11 @@ func (b *business) Create(ctx context.Context, payload entity.ReimbursementCreat
 
 	userCtx := common.GetUserCtx(ctx)
 
-	amount, _ := strconv.Atoi(payload.Amount)
 	data := presentations.Reimbursement{
 		ID:          uuid.NewString(),
 		UserID:      userCtx.UserID,
-		Amount:      amount,
+		Amount:      payload.Amount,
 		Description: payload.Description,
-		Attachment:  payload.Attachment,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		CreatedBy:   userCtx.Username,
@@ -64,12 +61,10 @@ func (b *business) Update(ctx context.Context, payload entity.ReimbursementUpdat
 		return nil, common.ErrForbidden
 	}
 
-	amount, _ := strconv.Atoi(payload.Amount)
 	data := presentations.Reimbursement{
 		ID:          payload.Id,
-		Amount:      amount,
+		Amount:      payload.Amount,
 		Description: payload.Description,
-		Attachment:  payload.Attachment,
 		UpdatedAt:   time.Now(),
 		UpdatedBy:   userCtx.Username,
 	}

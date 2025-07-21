@@ -1,14 +1,9 @@
 package reimbursment
 
 import (
-	"errors"
-	"fmt"
-	"log"
-	"path/filepath"
 	"payslips/internal/business"
 	"payslips/internal/entity"
 	"payslips/internal/response"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,7 +11,6 @@ import (
 type Handler interface {
 	Create(c *fiber.Ctx) error
 	Update(c *fiber.Ctx) error
-	Preview(c *fiber.Ctx) error
 }
 
 type handler struct {
@@ -34,49 +28,14 @@ func (h *handler) Create(c *fiber.Ctx) error {
 		Entity = "ReimbursmentCreate"
 	)
 
-	amountstr := c.FormValue("amount")
-
-	description := c.FormValue("description")
-
-	attachment, err := c.FormFile("attachment")
-	if err != nil {
+	var payload entity.ReimbursementCreate
+	if err := c.BodyParser(&payload); err != nil {
 		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", nil).
-			JSON(c, fiber.StatusInternalServerError)
-	}
-
-	ext := filepath.Ext(attachment.Filename)
-	switch ext {
-	case ".png", ".jpg", ".jpeg":
-	default:
-		err = errors.New("content type must be a html")
-		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", err.Error()).
+			Errors("Failed to parse request body", err).
 			JSON(c, fiber.StatusBadRequest)
 	}
 
-	if attachment.Size > (5 * 1024 * 1024) {
-		err = errors.New("file size cannot be more than 5MB")
-		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", err.Error()).
-			JSON(c, fiber.StatusBadRequest)
-	}
-
-	path := fmt.Sprintf("./storage/%v-%v", time.Now().Unix(), attachment.Filename)
-
-	err = c.SaveFile(attachment, path)
-	if err != nil {
-		log.Println(err)
-		return response.NewResponse(Entity).
-			Errors("Failed to parse request body", err.Error()).
-			JSON(c, fiber.StatusBadRequest)
-	}
-
-	result, err := h.business.Reimbursment.Create(c.UserContext(), entity.ReimbursementCreate{
-		Amount:      amountstr,
-		Description: description,
-		Attachment:  path,
-	})
+	result, err := h.business.Reimbursment.Create(c.UserContext(), payload)
 	if err != nil {
 		return response.NewResponse(Entity).
 			Errors("Failed create reimbursment", err).
@@ -93,52 +52,14 @@ func (h *handler) Update(c *fiber.Ctx) error {
 		Entity = "ReimbursmentUpdate"
 	)
 
-	id := c.Params("id")
-
-	amountstr := c.FormValue("amount")
-
-	description := c.FormValue("description")
-
-	attachment, err := c.FormFile("attachment")
-	if err != nil {
-		return response.NewResponse("CreatePayment").
-			Errors("Failed to parse request body", nil).
-			JSON(c, fiber.StatusInternalServerError)
-	}
-
-	ext := filepath.Ext(attachment.Filename)
-	switch ext {
-	case ".png", ".jpg", ".jpeg":
-	default:
-		err = errors.New("content type must be a html")
-		return response.NewResponse("CreatePayment").
-			Errors("Failed to parse request body", err.Error()).
+	var payload entity.ReimbursementUpdate
+	if err := c.BodyParser(&payload); err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
 			JSON(c, fiber.StatusBadRequest)
 	}
 
-	if attachment.Size > (5 * 1024 * 1024) {
-		err = errors.New("file size cannot be more than 5MB")
-		return response.NewResponse("CreatePayment").
-			Errors("Failed to parse request body", err.Error()).
-			JSON(c, fiber.StatusBadRequest)
-	}
-
-	path := fmt.Sprintf("./storage/%v-%v", time.Now().Unix(), attachment.Filename)
-
-	err = c.SaveFile(attachment, path)
-	if err != nil {
-		log.Println(err)
-		return response.NewResponse("CreatePayment").
-			Errors("Failed to parse request body", err.Error()).
-			JSON(c, fiber.StatusBadRequest)
-	}
-
-	result, err := h.business.Reimbursment.Update(c.UserContext(), entity.ReimbursementUpdate{
-		Amount:      amountstr,
-		Description: description,
-		Attachment:  path,
-		Id:          id,
-	})
+	result, err := h.business.Reimbursment.Update(c.UserContext(), payload)
 	if err != nil {
 		return response.NewResponse(Entity).
 			Errors("Failed update reimbursment", err).
@@ -148,15 +69,4 @@ func (h *handler) Update(c *fiber.Ctx) error {
 	return response.NewResponse(Entity).
 		Success("Success Update Reimbursment", result).
 		JSON(c, fiber.StatusOK)
-}
-
-func (h *handler) Preview(c *fiber.Ctx) error {
-	detail, err := h.business.Reimbursment.Detail(c.UserContext(), c.Params("id"))
-	if err != nil {
-		return response.NewResponse("ReimbursmentPreview").
-			Errors("Failed to fetch reservation", err).
-			JSON(c, fiber.StatusInternalServerError)
-	}
-
-	return c.SendFile(detail.Attachment)
 }
