@@ -38,3 +38,14 @@ type OvertimeBreakdown struct {
 	TotalHours  float64 `json:"total_hours"`
 	OvertimePay int     `json:"overtime_pay"`
 }
+
+type CalculatePayslip struct {
+	WorkingDays        int
+	ProratedSalary     int
+	TotalReimb         float64
+	TotalOvertimeHours float64
+	OvertimePay        float64
+	TotalTakeHome      int
+	PresentDays        int
+	Reimbursements     []Reimbursement
+}
