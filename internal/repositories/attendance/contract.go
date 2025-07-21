@@ -11,4 +11,6 @@ type Attendance interface {
 	Detail(ctx context.Context, id string) (*presentations.Attendance, error)
 	GetCheckinByDate(ctx context.Context, user_id string, date time.Time) (*presentations.Attendance, error)
 	Update(ctx context.Context, payload presentations.Attendance) error
+	UpdatePayrollID(ctx context.Context, payrollID string, updatedBy string, start, end time.Time) error
+	FindByPayrollID(ctx context.Context, payrollID string) ([]presentations.Attendance, error)
 }
