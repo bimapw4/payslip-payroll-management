@@ -8,7 +8,7 @@ import (
 func (r *repo) Create(ctx context.Context, input presentations.Overtime) error {
 
 	query := `
-    INSERT INTO attendance (
+    INSERT INTO overtime (
         id, user_id, start_time, end_time, duration, created_at,updated_at, created_by, updated_by
     ) VALUES (
         :id, :user_id, :start_time, :end_time, :duration, :created_at, :updated_at, :created_by, :updated_by
