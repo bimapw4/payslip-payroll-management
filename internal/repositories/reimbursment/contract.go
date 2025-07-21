@@ -11,4 +11,5 @@ type Reimbursment interface {
 	Detail(ctx context.Context, id string) (*presentations.Reimbursement, error)
 	Update(ctx context.Context, payload presentations.Reimbursement) error
 	UpdatePayrollID(ctx context.Context, payrollID string, updatedBy string, start, end time.Time) error
+	FindByPayrollID(ctx context.Context, userID, payrollID string) ([]presentations.Reimbursement, error)
 }
