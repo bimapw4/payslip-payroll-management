@@ -4,6 +4,7 @@ import (
 	"payslips/internal/business"
 	"payslips/internal/entity"
 	"payslips/internal/response"
+	"payslips/pkg/meta"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -14,6 +15,7 @@ type Handler interface {
 	Create(c *fiber.Ctx) error
 	Running(c *fiber.Ctx) error
 	GeneratePayslip(c *fiber.Ctx) error
+	SummaryPayslip(c *fiber.Ctx) error
 }
 
 type handler struct {
@@ -99,5 +101,32 @@ func (h *handler) GeneratePayslip(c *fiber.Ctx) error {
 
 	return response.NewResponse(Entity).
 		Success("Success Payroll Generate Payslip", result).
+		JSON(c, fiber.StatusOK)
+}
+
+func (h *handler) SummaryPayslip(c *fiber.Ctx) error {
+	var (
+		Entity = "SummaryPayslip"
+	)
+
+	if err := validation.Validate(c.Params("id"), is.UUID); err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll summary payslip", err.Error()).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	query := c.Queries()
+
+	m := meta.NewParams(query)
+
+	result, err := h.business.Payroll.ListSummary(c.UserContext(), &m, c.Params("id"))
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll summary payslip", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	return response.NewResponse(Entity).
+		SuccessWithMeta("Success Payroll Summary Payslip", result, m).
 		JSON(c, fiber.StatusOK)
 }
