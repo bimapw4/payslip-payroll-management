@@ -22,3 +22,11 @@ type Reimbursement struct {
 	CreatedBy   string    `db:"created_by" json:"created_by"`
 	UpdatedBy   string    `db:"updated_by" json:"updated_by"`
 }
+
+func SumReimbursement(reimb []Reimbursement) float64 {
+	var total float64
+	for _, r := range reimb {
+		total += float64(r.Amount)
+	}
+	return total
+}

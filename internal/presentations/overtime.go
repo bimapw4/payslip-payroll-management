@@ -22,3 +22,11 @@ type Overtime struct {
 	CreatedBy string    `db:"created_by" json:"created_by"`
 	UpdatedBy string    `db:"updated_by" json:"updated_by"`
 }
+
+func SumOvertime(overtimes []Overtime) float64 {
+	var total float64
+	for _, ot := range overtimes {
+		total += ot.Duration
+	}
+	return total
+}
