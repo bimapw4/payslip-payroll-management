@@ -61,6 +61,10 @@ func (b *business) Update(ctx context.Context, payload entity.ReimbursementUpdat
 		return nil, common.ErrForbidden
 	}
 
+	if reimburs.PayrollID != nil {
+		return nil, common.Error("already running payroll")
+	}
+
 	data := presentations.Reimbursement{
 		ID:          payload.Id,
 		Amount:      payload.Amount,
@@ -73,7 +77,11 @@ func (b *business) Update(ctx context.Context, payload entity.ReimbursementUpdat
 		return nil, err
 	}
 
-	return &data, nil
+	reimburs, err = b.repo.Reimbursement.Detail(ctx, payload.Id)
+	if err != nil {
+		return nil, err
+	}
+	return reimburs, nil
 }
 
 func (b *business) Detail(ctx context.Context, Id string) (*presentations.Reimbursement, error) {

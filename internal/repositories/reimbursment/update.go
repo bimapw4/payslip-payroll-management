@@ -12,7 +12,6 @@ func (r *repo) Update(ctx context.Context, payload presentations.Reimbursement) 
 		update reimbursement set 
 			amount=:amount, 
 			description=:description, 
-			attachment=:attachment, 
 			updated_by=:updated_by, 
 			updated_at=:updated_at 
 		where id=:id

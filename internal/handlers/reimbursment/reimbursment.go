@@ -1,6 +1,7 @@
 package reimbursment
 
 import (
+	"log"
 	"payslips/internal/business"
 	"payslips/internal/entity"
 	"payslips/internal/response"
@@ -61,6 +62,7 @@ func (h *handler) Update(c *fiber.Ctx) error {
 
 	result, err := h.business.Reimbursment.Update(c.UserContext(), payload)
 	if err != nil {
+		log.Println("err", err.Error())
 		return response.NewResponse(Entity).
 			Errors("Failed update reimbursment", err).
 			JSON(c, fiber.StatusBadRequest)
