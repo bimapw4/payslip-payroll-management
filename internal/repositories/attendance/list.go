@@ -54,7 +54,7 @@ func (r *repo) List(ctx context.Context, m *meta.Params, userID string) ([]prese
 func (r *repo) Count(ctx context.Context, userID string) (int, error) {
 	var count int
 
-	query := `SELECT COUNT(*)FROM payslip_summary WHERE user_id=:user_id`
+	query := `SELECT COUNT(*)FROM attendance WHERE user_id=:user_id`
 
 	args := map[string]interface{}{
 		"user_id": userID,
