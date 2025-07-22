@@ -14,4 +14,5 @@ type Overtime interface {
 	Detail(ctx context.Context, id string) (*presentations.Overtime, error)
 	UpdatePayrollID(ctx context.Context, payrollID string, updatedBy string, start, end time.Time) error
 	FindByPayrollID(ctx context.Context, userID, payrollID string) ([]presentations.Overtime, error)
+	GetOvertimeByDate(ctx context.Context, user_id string, date time.Time) (*presentations.Attendance, error)
 }

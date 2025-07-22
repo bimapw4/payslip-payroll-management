@@ -3,6 +3,7 @@ package overtime
 import (
 	"context"
 	"payslips/internal/presentations"
+	"time"
 )
 
 func (r *repo) Detail(ctx context.Context, id string) (*presentations.Overtime, error) {
@@ -52,4 +53,29 @@ func (r *repo) FindByPayrollID(ctx context.Context, userID, payrollID string) ([
 	}
 
 	return result, nil
+}
+
+func (r *repo) GetOvertimeByDate(ctx context.Context, user_id string, date time.Time) (*presentations.Attendance, error) {
+	var (
+		result = presentations.Attendance{}
+	)
+
+	query := `SELECT * FROM overtime where user_id=:user_id and date(start_time)=date(:start_time)`
+
+	args := map[string]interface{}{
+		"start_time": date,
+		"user_id":    user_id,
+	}
+
+	stmt, err := r.db.PrepareNamedContext(ctx, query)
+	if err != nil {
+		return nil, r.translateError(err)
+	}
+
+	err = stmt.GetContext(ctx, &result, args)
+	if err != nil {
+		return nil, r.translateError(err)
+	}
+
+	return &result, nil
 }

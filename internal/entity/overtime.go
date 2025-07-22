@@ -9,13 +9,14 @@ import (
 type Overtime struct {
 	StartTime time.Time `json:"start_time"`
 	EndTime   time.Time `json:"end_time"`
+	Duration  int       `json:"duration"`
 }
 
 func (v *Overtime) Validation() error {
 	return validation.ValidateStruct(
 		v,
 		validation.Field(&v.StartTime, validation.Required),
-		validation.Field(&v.EndTime, validation.Required),
+		// validation.Field(&v.EndTime, validation.Required),
 	)
 }
 

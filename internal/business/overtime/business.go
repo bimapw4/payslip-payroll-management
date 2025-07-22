@@ -30,6 +30,10 @@ func NewBusiness(repo *repositories.Repository) Contract {
 
 func (b *business) Overtime(ctx context.Context, payload entity.Overtime) (*presentations.Overtime, error) {
 
+	if payload.EndTime.IsZero() {
+		payload.EndTime = payload.StartTime.Add(time.Duration(payload.Duration) * time.Hour)
+	}
+
 	if payload.GetDuration() > 3 {
 		return nil, common.Error("overtime cannot more than 3 hours")
 	}
@@ -39,6 +43,11 @@ func (b *business) Overtime(ctx context.Context, payload entity.Overtime) (*pres
 	}
 
 	userctx := common.GetUserCtx(ctx)
+
+	exist, _ := b.repo.Overtime.GetOvertimeByDate(ctx, userctx.UserID, payload.StartTime)
+	if exist != nil {
+		return nil, presentations.ErrOvertimeAlreadyExist
+	}
 
 	data := presentations.Overtime{
 		ID:        uuid.NewString(),

@@ -56,6 +56,10 @@ func TestBusiness_Overtime_Success(t *testing.T) {
 	}
 
 	mockOvertime.EXPECT().
+		GetOvertimeByDate(ctx, "user-1", start).
+		Return(nil, nil)
+
+	mockOvertime.EXPECT().
 		Create(ctx, gomock.AssignableToTypeOf(presentations.Overtime{})).
 		Return(nil)
 

@@ -81,6 +81,21 @@ func (mr *MockOvertimeMockRecorder) FindByPayrollID(ctx, userID, payrollID inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPayrollID", reflect.TypeOf((*MockOvertime)(nil).FindByPayrollID), ctx, userID, payrollID)
 }
 
+// GetOvertimeByDate mocks base method.
+func (m *MockOvertime) GetOvertimeByDate(ctx context.Context, user_id string, date time.Time) (*presentations.Attendance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOvertimeByDate", ctx, user_id, date)
+	ret0, _ := ret[0].(*presentations.Attendance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOvertimeByDate indicates an expected call of GetOvertimeByDate.
+func (mr *MockOvertimeMockRecorder) GetOvertimeByDate(ctx, user_id, date interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOvertimeByDate", reflect.TypeOf((*MockOvertime)(nil).GetOvertimeByDate), ctx, user_id, date)
+}
+
 // List mocks base method.
 func (m_2 *MockOvertime) List(ctx context.Context, m *meta.Params, userID string) ([]presentations.Overtime, error) {
 	m_2.ctrl.T.Helper()
