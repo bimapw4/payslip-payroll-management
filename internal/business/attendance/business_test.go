@@ -14,6 +14,7 @@ import (
 	payslipsummary "payslips/internal/repositories/payslip_summary"
 	"payslips/internal/repositories/reimbursment"
 	"payslips/internal/repositories/users"
+	"payslips/pkg/meta"
 	"testing"
 	"time"
 
@@ -283,4 +284,65 @@ func TestBusiness_Attendance_UnknownType(t *testing.T) {
 
 	err := b.Attendance(ctx, input)
 	assert.ErrorIs(t, err, common.ErrBadRequest)
+}
+
+func TestBusiness_Attendance_List_Success(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockUsers := users.NewMockUsers(ctrl)
+	mockAttendance := attendancerep.NewMockAttendance(ctrl)
+	mockOvertime := overtime.NewMockOvertime(ctrl)
+	mockReimbursement := reimbursment.NewMockReimbursment(ctrl)
+	mockPayslipSummary := payslipsummary.NewMockPayslipSummary(ctrl)
+	mockPayroll := payroll.NewMockPayroll(ctrl)
+
+	repo := &repositories.Repository{
+		Users:          mockUsers,
+		Attendance:     mockAttendance,
+		Payroll:        mockPayroll,
+		Overtime:       mockOvertime,
+		Reimbursement:  mockReimbursement,
+		PayslipSummary: mockPayslipSummary,
+	}
+
+	b := attendance.NewBusiness(repo)
+
+	ctx := common.SetUserCtx(context.Background(), &entity.Claim{
+		UserID:   "user-1",
+		Username: "user1",
+	})
+
+	metaParams := &meta.Params{
+		// Page:    1,
+		// Limit:   10,
+		// OrderBy: "created_at",
+		// Sort:    "desc",
+	}
+
+	now := time.Now()
+	end := now.Add(1 * time.Hour)
+	payrollID := "payroll-123"
+	expectedResult := []presentations.Attendance{
+		{
+			ID:        "att-123",
+			UserID:    "user-1",
+			CheckIn:   now.Add(-9 * time.Hour),
+			CheckOut:  &end,
+			PayrollID: &payrollID,
+			CreatedAt: now.Add(-10 * time.Hour),
+			UpdatedAt: now,
+			CreatedBy: "user1",
+			UpdatedBy: "user1",
+		},
+	}
+
+	mockAttendance.EXPECT().
+		List(ctx, metaParams, "user-1").
+		Return(expectedResult, nil)
+
+	result, err := b.List(ctx, metaParams)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expectedResult, result)
 }
