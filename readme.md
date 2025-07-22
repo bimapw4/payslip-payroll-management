@@ -3,7 +3,7 @@
 > A project **Golang Fiber** REST API with **PostgreSQL**, built with modular architecture including Authentication, Payroll processing, Employee payslips, Attendance tracking, Overtime, and other.
 
 
-### Features
+### 👀 1. Features
 > 
 | Module             | Description                                        |
 | ------------------ | -------------------------------------------------- |
@@ -15,7 +15,7 @@
 | **Audit Log**      | Log all HTTP requests & responses (middleware)     |
 | **Authentication** | JWT-based login with bcrypt password hashing       |
 
-### Project Structure
+### 2. Project Structure
 <pre>
 ├── bootstrap/                # App initialization (DB, DI, Migrations)
 │   ├── db.go
@@ -50,7 +50,7 @@
 └── readme.md                 
 </pre>
 
-### Database Schema
+### 3. Database Schema
 Main tables:
 * users
 * payroll
@@ -60,12 +60,12 @@ Main tables:
 * payslip_summary
 * audit_log
 
-### Authentication
+### 4. Authentication
 * Login with username & password
 * Passwords are hashed using bcrypt
 * JWT access tokens are issued for API access
 
-### Sample Endpoints
+### 5. Sample Endpoints
 | Method | Endpoint               | Description                |
 | ------ | ---------------------- | -------------------------- |
 | POST   | `/login`               | Login & get JWT token      |
@@ -76,34 +76,35 @@ Main tables:
 | GET    | `/payroll/generate/payslips/:id` | Generate payslip for user  |
 | GET    | `/payroll/summary/payslip/:id` | Get List payslip summary report for admin |
 
+```
 this is the postman collection 
 [Link Download](https://drive.google.com/drive/folders/1iH-8LSI9sTK90nx7k8IlPpeBDlHseTvC?usp=sharing)
+```
 
-
-### Testing
+### 6. Testing
 ✅ Unit Test
 * Business layer unit tested
 * Using gomock + testify
 
-### Run Tests
+### 7. Run Tests
 Run all tests:
 ```
 go test ./internal/... -v
 ```
 
-### 4. Run the Project
+### 8. Run the Project
 Without Docker
 ```
 go run main.go
 ```
-#### or
+##### or
 with docker
 ```
 docker-compose build --no-cache
 docker-compose up
 ```
 
-### Technology Stack
+### 9. Technology Stack
 * Golang (1.21+)
 
 * Fiber (HTTP Framework)
@@ -116,10 +117,10 @@ docker-compose up
 
 * Docker / Docker Compose
 
-### 📄 API Logging
+### 📄 10.  API Logging
 All API requests and responses are logged to the audit log table using auditlog middleware.
 
-### Env Example
+### 11. Env Example
 ```
 APP_NAME = Payroll Payslip
 PORT = 8083
