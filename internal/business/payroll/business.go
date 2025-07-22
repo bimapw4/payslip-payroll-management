@@ -16,7 +16,7 @@ type Contract interface {
 	CreatePayroll(ctx context.Context, payload entity.Payroll) (*presentations.Payroll, error)
 	UpdatePayroll(ctx context.Context, payload entity.Payroll, id string) (*presentations.Payroll, error)
 	RunningPayroll(ctx context.Context, payrollID string) error
-	GeneratePayslip(ctx context.Context, payrollID string) (*presentations.PayslipResponse, error)
+	GeneratePayslip(ctx context.Context, payrollID, userID string) (*presentations.PayslipResponse, error)
 	ListSummary(ctx context.Context, m *meta.Params, payrollId string) ([]presentations.PayslipSummary, error)
 	List(ctx context.Context, m *meta.Params) ([]presentations.Payroll, error)
 }
@@ -159,10 +159,9 @@ func (b *business) RunningPayroll(ctx context.Context, payrollID string) error {
 	return nil
 }
 
-func (b *business) GeneratePayslip(ctx context.Context, payrollID string) (*presentations.PayslipResponse, error) {
-	userctx := common.GetUserCtx(ctx)
+func (b *business) GeneratePayslip(ctx context.Context, payrollID, userID string) (*presentations.PayslipResponse, error) {
 
-	user, err := b.repo.Users.Detail(ctx, userctx.UserID)
+	user, err := b.repo.Users.Detail(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

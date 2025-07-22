@@ -199,7 +199,7 @@ func TestGeneratePayslip_Success(t *testing.T) {
 		}, nil)
 
 	// Run GeneratePayslip
-	result, err := b.GeneratePayslip(ctx, payrollID)
+	result, err := b.GeneratePayslip(ctx, payrollID, userID)
 
 	assert.NoError(t, err)
 	assert.Equal(t, payrollID, result.PayrollID)

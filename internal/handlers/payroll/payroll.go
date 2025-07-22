@@ -1,7 +1,9 @@
 package payroll
 
 import (
+	"fmt"
 	"payslips/internal/business"
+	"payslips/internal/common"
 	"payslips/internal/entity"
 	"payslips/internal/response"
 	"payslips/pkg/meta"
@@ -15,6 +17,7 @@ type Handler interface {
 	Create(c *fiber.Ctx) error
 	Running(c *fiber.Ctx) error
 	GeneratePayslip(c *fiber.Ctx) error
+	GeneratePayslipAdmin(c *fiber.Ctx) error
 	SummaryPayslip(c *fiber.Ctx) error
 	List(c *fiber.Ctx) error
 	Update(c *fiber.Ctx) error
@@ -34,6 +37,13 @@ func (h *handler) Create(c *fiber.Ctx) error {
 	var (
 		Entity = "Payroll"
 	)
+
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
 
 	var payload entity.Payroll
 	if err := c.BodyParser(&payload); err != nil {
@@ -64,6 +74,13 @@ func (h *handler) Update(c *fiber.Ctx) error {
 	var (
 		Entity = "UpdatePayroll"
 	)
+
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
 
 	if err := validation.Validate(c.Params("id"), is.UUID); err != nil {
 		return response.NewResponse(Entity).
@@ -101,6 +118,13 @@ func (h *handler) List(c *fiber.Ctx) error {
 		Entity = "ListPayroll"
 	)
 
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
+
 	query := c.Queries()
 
 	m := meta.NewParams(query)
@@ -121,6 +145,13 @@ func (h *handler) Running(c *fiber.Ctx) error {
 	var (
 		Entity = "RunningPayroll"
 	)
+
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
 
 	if err := validation.Validate(c.Params("id"), is.UUID); err != nil {
 		return response.NewResponse(Entity).
@@ -145,13 +176,51 @@ func (h *handler) GeneratePayslip(c *fiber.Ctx) error {
 		Entity = "GeneratePayslip"
 	)
 
+	userctx := common.GetUserCtx(c.UserContext())
+
 	if err := validation.Validate(c.Params("id"), is.UUID); err != nil {
 		return response.NewResponse(Entity).
 			Errors("Failed payroll generate payslip", err.Error()).
 			JSON(c, fiber.StatusBadRequest)
 	}
 
-	result, err := h.business.Payroll.GeneratePayslip(c.UserContext(), c.Params("id"))
+	result, err := h.business.Payroll.GeneratePayslip(c.UserContext(), c.Params("id"), userctx.UserID)
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	return response.NewResponse(Entity).
+		Success("Success Payroll Generate Payslip", result).
+		JSON(c, fiber.StatusOK)
+}
+
+func (h *handler) GeneratePayslipAdmin(c *fiber.Ctx) error {
+	var (
+		Entity = "GeneratePayslip"
+	)
+
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
+
+	if err := validation.Validate(c.Params("id"), is.UUID); err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", err.Error()).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	if err := validation.Validate(c.Params("user_id"), is.UUID); err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", fmt.Sprintf("user id %v", err.Error())).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	result, err := h.business.Payroll.GeneratePayslip(c.UserContext(), c.Params("id"), c.Params("user_id"))
 	if err != nil {
 		return response.NewResponse(Entity).
 			Errors("Failed payroll generate payslip", err).
@@ -167,6 +236,13 @@ func (h *handler) SummaryPayslip(c *fiber.Ctx) error {
 	var (
 		Entity = "SummaryPayslip"
 	)
+
+	userctx := common.GetUserCtx(c.UserContext())
+	if !userctx.IsAdmin {
+		return response.NewResponse(Entity).
+			Errors("Failed payroll generate payslip", "only admin allowed").
+			JSON(c, fiber.StatusForbidden)
+	}
 
 	if err := validation.Validate(c.Params("id"), is.UUID); err != nil {
 		return response.NewResponse(Entity).
