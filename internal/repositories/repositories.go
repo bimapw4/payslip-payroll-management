@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"payslips/internal/repositories/attendance"
+	auditlog "payslips/internal/repositories/audit_log"
 	"payslips/internal/repositories/overtime"
 	"payslips/internal/repositories/payroll"
 	payslipsummary "payslips/internal/repositories/payslip_summary"
@@ -18,6 +19,7 @@ type Repository struct {
 	Overtime       overtime.Overtime
 	Reimbursement  reimbursment.Reimbursment
 	PayslipSummary payslipsummary.PayslipSummary
+	AuditLog       auditlog.AuditLog
 }
 
 func NewRepository(db *sqlx.DB) Repository {
@@ -28,5 +30,6 @@ func NewRepository(db *sqlx.DB) Repository {
 		Overtime:       overtime.NewRepo(db),
 		Reimbursement:  reimbursment.NewRepo(db),
 		PayslipSummary: payslipsummary.NewRepo(db),
+		AuditLog:       auditlog.NewRepo(db),
 	}
 }
