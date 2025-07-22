@@ -41,6 +41,7 @@ func TestAuditLog_Create_Success(t *testing.T) {
 		Overtime:       mockOvertime,
 		Reimbursement:  mockReimbursement,
 		PayslipSummary: mockPayslipSummary,
+		AuditLog:       mockAuditLog,
 	}
 
 	b := auditlog.NewBusiness(repo)
@@ -86,6 +87,7 @@ func TestAuditLog_List_Success(t *testing.T) {
 		Overtime:       mockOvertime,
 		Reimbursement:  mockReimbursement,
 		PayslipSummary: mockPayslipSummary,
+		AuditLog:       mockAuditLog,
 	}
 
 	b := auditlog.NewBusiness(repo)
