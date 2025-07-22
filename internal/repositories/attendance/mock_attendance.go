@@ -7,6 +7,7 @@ package attendance
 import (
 	context "context"
 	presentations "payslips/internal/presentations"
+	meta "payslips/pkg/meta"
 	reflect "reflect"
 	time "time"
 
@@ -93,6 +94,21 @@ func (m *MockAttendance) GetCheckinByDate(ctx context.Context, user_id string, d
 func (mr *MockAttendanceMockRecorder) GetCheckinByDate(ctx, user_id, date interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCheckinByDate", reflect.TypeOf((*MockAttendance)(nil).GetCheckinByDate), ctx, user_id, date)
+}
+
+// List mocks base method.
+func (m_2 *MockAttendance) List(ctx context.Context, m *meta.Params, userID string) ([]presentations.Attendance, error) {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "List", ctx, m, userID)
+	ret0, _ := ret[0].([]presentations.Attendance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockAttendanceMockRecorder) List(ctx, m, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockAttendance)(nil).List), ctx, m, userID)
 }
 
 // Update mocks base method.

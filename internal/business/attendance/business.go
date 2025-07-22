@@ -7,6 +7,7 @@ import (
 	"payslips/internal/entity"
 	"payslips/internal/presentations"
 	"payslips/internal/repositories"
+	"payslips/pkg/meta"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,6 +15,7 @@ import (
 
 type Contract interface {
 	Attendance(ctx context.Context, payload entity.AttendanceInput) error
+	List(ctx context.Context, m *meta.Params) ([]presentations.Attendance, error)
 }
 
 type business struct {
@@ -98,4 +100,11 @@ func (b *business) checkOut(ctx context.Context, payload entity.AttendanceInput)
 	}
 
 	return nil
+}
+
+func (b *business) List(ctx context.Context, m *meta.Params) ([]presentations.Attendance, error) {
+
+	userctx := common.GetUserCtx(ctx)
+
+	return b.repo.Attendance.List(ctx, m, userctx.UserID)
 }
