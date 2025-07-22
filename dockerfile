@@ -1,36 +1,30 @@
-# Use an official Golang image as a base image for the build phase
-FROM golang:1.20-alpine AS builder
+# Use Golang Alpine as base image
+FROM golang:1.21-alpine
 
-# Set environment variables
-ENV GO111MODULE=on
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
+# Install required packages
+RUN apk add --no-cache git
 
-# Create an app directory
+# Set environment
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
+
+# Set working directory
 WORKDIR /app
 
-# Copy the go.mod and go.sum files to download dependencies
+# Copy go.mod & go.sum first (cache layer)
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the rest of the application code
+# Copy the entire project
 COPY . .
 
-# Build the Go app for production
+# Build the app
 RUN go build -o payslips ./main.go
 
-# Use a lightweight Alpine image for the final stage
-FROM alpine:latest
-
-# Set the working directory in the container
-WORKDIR /root/
-
-# Copy the binary from the builder stage
-COPY --from=builder /app/payslips .
-
-# Expose port 3000
+# Expose the app port
 EXPOSE 3000
 
-# Command to run the executable
+# Run the executable
 CMD ["./payslips"]

@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.0'
 
 services:
   app:
@@ -8,9 +8,5 @@ services:
     container_name: fiber_app
     ports:
       - '3000:3000'
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=fiber_db
+    env_file:
+      - .env
