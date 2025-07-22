@@ -8,5 +8,5 @@ import (
 )
 
 func OvertimeRouter(app *fiber.App, handler handlers.Handlers, m *middleware.Authentication) {
-	app.Post("/overtime", m.Authentication, handler.Overtime.Create)
+	app.Post("/overtime", m.Authentication, m.AuditLog, handler.Overtime.Create)
 }

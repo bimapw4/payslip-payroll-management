@@ -8,5 +8,5 @@ import (
 )
 
 func AttendanceRouter(app *fiber.App, handler handlers.Handlers, m *middleware.Authentication) {
-	app.Post("/attendance", m.Authentication, handler.Attendance.Attendance)
+	app.Post("/attendance", m.Authentication, m.AuditLog, handler.Attendance.Attendance)
 }
