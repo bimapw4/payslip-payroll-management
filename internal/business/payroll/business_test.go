@@ -262,3 +262,114 @@ func TestListSummary_Success(t *testing.T) {
 	assert.Equal(t, len(expectedList), len(result))
 	assert.Equal(t, expectedList[0].TakeHomePay, result[0].TakeHomePay)
 }
+
+func TestBusiness_UpdatePayroll_Success(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockUsers := users.NewMockUsers(ctrl)
+	mockAttendance := attendance.NewMockAttendance(ctrl)
+	mockOvertime := overtime.NewMockOvertime(ctrl)
+	mockReimbursement := reimbursment.NewMockReimbursment(ctrl)
+	mockPayslipSummary := payslipsummary.NewMockPayslipSummary(ctrl)
+	mockPayroll := payrollrepo.NewMockPayroll(ctrl)
+
+	mockrepo := &repositories.Repository{
+		Users:          mockUsers,
+		Attendance:     mockAttendance,
+		Payroll:        mockPayroll,
+		Overtime:       mockOvertime,
+		Reimbursement:  mockReimbursement,
+		PayslipSummary: mockPayslipSummary,
+	}
+
+	b := payroll.NewBusiness(mockrepo)
+
+	ctx := common.SetUserCtx(context.Background(), &entity.Claim{
+		UserID:   "user-1",
+		Username: "user1",
+	})
+
+	start := time.Now().AddDate(0, 0, -30)
+	end := time.Now()
+
+	id := "payroll-123"
+	input := entity.Payroll{
+		PeriodStart: start,
+		PeriodEnd:   end,
+	}
+
+	existing := &presentations.Payroll{
+		ID:         id,
+		RunPayroll: false,
+		CreatedAt:  start,
+		CreatedBy:  "admin",
+	}
+
+	mockPayroll.EXPECT().
+		Detail(ctx, id).
+		Return(existing, nil)
+
+	mockPayroll.EXPECT().
+		Update(ctx, gomock.AssignableToTypeOf(presentations.Payroll{})).
+		Return(nil)
+
+	result, err := b.UpdatePayroll(ctx, input, id)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, id, result.ID)
+	assert.Equal(t, start, result.PeriodStart)
+	assert.Equal(t, end, result.PeriodEnd)
+	assert.Equal(t, "admin", result.CreatedBy)
+	assert.Equal(t, "user1", result.UpdatedBy)
+}
+
+func TestBusiness_ListPayroll_Success(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockUsers := users.NewMockUsers(ctrl)
+	mockAttendance := attendance.NewMockAttendance(ctrl)
+	mockOvertime := overtime.NewMockOvertime(ctrl)
+	mockReimbursement := reimbursment.NewMockReimbursment(ctrl)
+	mockPayslipSummary := payslipsummary.NewMockPayslipSummary(ctrl)
+	mockPayroll := payrollrepo.NewMockPayroll(ctrl)
+
+	mockrepo := &repositories.Repository{
+		Users:          mockUsers,
+		Attendance:     mockAttendance,
+		Payroll:        mockPayroll,
+		Overtime:       mockOvertime,
+		Reimbursement:  mockReimbursement,
+		PayslipSummary: mockPayslipSummary,
+	}
+
+	b := payroll.NewBusiness(mockrepo)
+
+	ctx := common.SetUserCtx(context.Background(), &entity.Claim{
+		UserID:   "user-1",
+		Username: "user1",
+	})
+
+	params := &meta.Params{}
+
+	expected := []presentations.Payroll{
+		{
+			ID:          "payroll-1",
+			PeriodStart: time.Now().AddDate(0, -1, 0),
+			PeriodEnd:   time.Now(),
+			CreatedBy:   "admin",
+			UpdatedBy:   "admin",
+		},
+	}
+
+	mockPayroll.EXPECT().
+		List(ctx, params, "user-1").
+		Return(expected, nil)
+
+	result, err := b.List(ctx, params)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expected, result)
+}
