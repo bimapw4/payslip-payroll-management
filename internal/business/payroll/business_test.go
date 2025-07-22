@@ -80,7 +80,7 @@ func TestRunningPayroll_Success(t *testing.T) {
 
 	mockPayslipSummary.EXPECT().Create(gomock.Any(), gomock.AssignableToTypeOf(presentations.PayslipSummary{})).Return(nil)
 
-	mockPayroll.EXPECT().Update(gomock.Any(), gomock.Any()).Return(nil)
+	mockPayroll.EXPECT().UpdatePayroll(gomock.Any(), gomock.Any()).Return(nil)
 
 	err := b.RunningPayroll(ctx, "payroll-id")
 	assert.NoError(t, err)
