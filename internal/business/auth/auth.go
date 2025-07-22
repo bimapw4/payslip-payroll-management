@@ -33,21 +33,22 @@ func (b *business) Authorization(ctx context.Context, payload entity.Authorizati
 		err   error
 	)
 
-	if payload.Type == "authorization" {
-		users, err = b.repo.Users.GetUserByUsername(ctx, payload.Username)
-		if err != nil {
-			return nil, err
-		}
-
-		err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(payload.Password))
-		if err != nil {
-			return nil, common.ErrUnauthorized
-		}
+	// if payload.Type == "authorization" {
+	users, err = b.repo.Users.GetUserByUsername(ctx, payload.Username)
+	if err != nil {
+		return nil, err
 	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(users.Password), []byte(payload.Password))
+	if err != nil {
+		return nil, common.ErrUnauthorized
+	}
+	// }
 
 	accesstoken, err := b.jwt.GenerateAuthorizartionCode(entity.Claim{
 		UserID:   users.ID,
 		Username: users.Username,
+		IsAdmin:  users.IsAdmin,
 	})
 	if err != nil {
 		return nil, err

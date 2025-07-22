@@ -44,7 +44,7 @@ func TestAuthorization_Success_WithRealJWT(t *testing.T) {
 	input := entity.Authorization{
 		Username: "testuser",
 		Password: "password123",
-		Type:     "authorization",
+		// Type:     "authorization",
 	}
 
 	resp, err := b.Authorization(ctx, input)
@@ -86,7 +86,7 @@ func TestAuthorization_InvalidPassword_WithRealJWT(t *testing.T) {
 	input := entity.Authorization{
 		Username: "testuser",
 		Password: "wrongPassword",
-		Type:     "authorization",
+		// Type:     "authorization",
 	}
 
 	resp, err := b.Authorization(ctx, input)
