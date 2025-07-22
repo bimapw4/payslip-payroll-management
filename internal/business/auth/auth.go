@@ -7,9 +7,6 @@ import (
 	"payslips/internal/presentations"
 	"payslips/internal/repositories"
 
-	"strings"
-
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -56,11 +53,11 @@ func (b *business) Authorization(ctx context.Context, payload entity.Authorizati
 		return nil, err
 	}
 
-	refreshToken := strings.ReplaceAll(uuid.NewString(), "-", "")
+	// refreshToken := strings.ReplaceAll(uuid.NewString(), "-", "")
 
 	return &presentations.AuthorizationResp{
-		AccessToken:  accesstoken,
-		RefreshToken: refreshToken,
+		AccessToken: accesstoken,
+		// RefreshToken: refreshToken,
 	}, nil
 
 }

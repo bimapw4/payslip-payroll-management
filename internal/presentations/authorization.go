@@ -12,8 +12,8 @@ const (
 )
 
 type AuthorizationResp struct {
-	AccessToken  string `json:"access_token" db:"access_token"`
-	RefreshToken string `json:"refresh_token" db:"refresh_token"`
+	AccessToken string `json:"access_token" db:"access_token"`
+	// RefreshToken string `json:"refresh_token" db:"refresh_token"`
 }
 
 type Authorization struct {
