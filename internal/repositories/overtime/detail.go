@@ -5,6 +5,30 @@ import (
 	"payslips/internal/presentations"
 )
 
+func (r *repo) Detail(ctx context.Context, id string) (*presentations.Overtime, error) {
+	var (
+		result = presentations.Overtime{}
+	)
+
+	query := `SELECT * FROM overtime where id=:id`
+
+	args := map[string]interface{}{
+		"id": id,
+	}
+
+	stmt, err := r.db.PrepareNamedContext(ctx, query)
+	if err != nil {
+		return nil, r.translateError(err)
+	}
+
+	err = stmt.GetContext(ctx, &result, args)
+	if err != nil {
+		return nil, r.translateError(err)
+	}
+
+	return &result, nil
+}
+
 func (r *repo) FindByPayrollID(ctx context.Context, userID, payrollID string) ([]presentations.Overtime, error) {
 	var (
 		result = []presentations.Overtime{}

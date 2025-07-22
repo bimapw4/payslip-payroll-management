@@ -7,6 +7,7 @@ package overtime
 import (
 	context "context"
 	presentations "payslips/internal/presentations"
+	meta "payslips/pkg/meta"
 	reflect "reflect"
 	time "time"
 
@@ -50,6 +51,21 @@ func (mr *MockOvertimeMockRecorder) Create(ctx, input interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOvertime)(nil).Create), ctx, input)
 }
 
+// Detail mocks base method.
+func (m *MockOvertime) Detail(ctx context.Context, id string) (*presentations.Overtime, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Detail", ctx, id)
+	ret0, _ := ret[0].(*presentations.Overtime)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Detail indicates an expected call of Detail.
+func (mr *MockOvertimeMockRecorder) Detail(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Detail", reflect.TypeOf((*MockOvertime)(nil).Detail), ctx, id)
+}
+
 // FindByPayrollID mocks base method.
 func (m *MockOvertime) FindByPayrollID(ctx context.Context, userID, payrollID string) ([]presentations.Overtime, error) {
 	m.ctrl.T.Helper()
@@ -63,6 +79,35 @@ func (m *MockOvertime) FindByPayrollID(ctx context.Context, userID, payrollID st
 func (mr *MockOvertimeMockRecorder) FindByPayrollID(ctx, userID, payrollID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPayrollID", reflect.TypeOf((*MockOvertime)(nil).FindByPayrollID), ctx, userID, payrollID)
+}
+
+// List mocks base method.
+func (m_2 *MockOvertime) List(ctx context.Context, m *meta.Params, userID string) ([]presentations.Overtime, error) {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "List", ctx, m, userID)
+	ret0, _ := ret[0].([]presentations.Overtime)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockOvertimeMockRecorder) List(ctx, m, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockOvertime)(nil).List), ctx, m, userID)
+}
+
+// Update mocks base method.
+func (m *MockOvertime) Update(ctx context.Context, payload presentations.Overtime) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, payload)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockOvertimeMockRecorder) Update(ctx, payload interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockOvertime)(nil).Update), ctx, payload)
 }
 
 // UpdatePayrollID mocks base method.
