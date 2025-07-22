@@ -7,6 +7,7 @@ package payroll
 import (
 	context "context"
 	presentations "payslips/internal/presentations"
+	meta "payslips/pkg/meta"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -64,6 +65,21 @@ func (mr *MockPayrollMockRecorder) Detail(ctx, id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Detail", reflect.TypeOf((*MockPayroll)(nil).Detail), ctx, id)
 }
 
+// List mocks base method.
+func (m_2 *MockPayroll) List(ctx context.Context, m *meta.Params, userID string) ([]presentations.Payroll, error) {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "List", ctx, m, userID)
+	ret0, _ := ret[0].([]presentations.Payroll)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockPayrollMockRecorder) List(ctx, m, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPayroll)(nil).List), ctx, m, userID)
+}
+
 // Update mocks base method.
 func (m *MockPayroll) Update(ctx context.Context, payload presentations.Payroll) error {
 	m.ctrl.T.Helper()
@@ -76,4 +92,18 @@ func (m *MockPayroll) Update(ctx context.Context, payload presentations.Payroll)
 func (mr *MockPayrollMockRecorder) Update(ctx, payload interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockPayroll)(nil).Update), ctx, payload)
+}
+
+// UpdatePayroll mocks base method.
+func (m *MockPayroll) UpdatePayroll(ctx context.Context, payload presentations.Payroll) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePayroll", ctx, payload)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePayroll indicates an expected call of UpdatePayroll.
+func (mr *MockPayrollMockRecorder) UpdatePayroll(ctx, payload interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePayroll", reflect.TypeOf((*MockPayroll)(nil).UpdatePayroll), ctx, payload)
 }

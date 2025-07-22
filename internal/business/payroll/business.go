@@ -7,15 +7,18 @@ import (
 	"payslips/internal/presentations"
 	"payslips/internal/repositories"
 	"payslips/pkg/meta"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 type Contract interface {
-	CreatePayroll(ctx context.Context, payload entity.Payroll) error
+	CreatePayroll(ctx context.Context, payload entity.Payroll) (*presentations.Payroll, error)
+	UpdatePayroll(ctx context.Context, payload entity.Payroll, id string) (*presentations.Payroll, error)
 	RunningPayroll(ctx context.Context, payrollID string) error
 	GeneratePayslip(ctx context.Context, payrollID string) (*presentations.PayslipResponse, error)
 	ListSummary(ctx context.Context, m *meta.Params, payrollId string) ([]presentations.PayslipSummary, error)
+	List(ctx context.Context, m *meta.Params) ([]presentations.Payroll, error)
 }
 
 type business struct {
@@ -28,21 +31,70 @@ func NewBusiness(repo *repositories.Repository) Contract {
 	}
 }
 
-func (b *business) CreatePayroll(ctx context.Context, payload entity.Payroll) error {
+func (b *business) CreatePayroll(ctx context.Context, payload entity.Payroll) (*presentations.Payroll, error) {
 
 	userctx := common.GetUserCtx(ctx)
 
-	err := b.repo.Payroll.Create(ctx, presentations.Payroll{
+	if payload.PeriodEnd.Before(payload.PeriodStart) {
+		return nil, common.Error("period_end cannot be before period_start")
+	}
+
+	data := presentations.Payroll{
 		ID:          uuid.NewString(),
 		PeriodStart: payload.PeriodStart,
 		PeriodEnd:   payload.PeriodEnd,
 		CreatedBy:   userctx.Username,
-	})
-	if err != nil {
-		return err
 	}
 
-	return nil
+	err := b.repo.Payroll.Create(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
+func (b *business) UpdatePayroll(ctx context.Context, payload entity.Payroll, id string) (*presentations.Payroll, error) {
+
+	userctx := common.GetUserCtx(ctx)
+
+	if payload.PeriodEnd.Before(payload.PeriodStart) {
+		return nil, common.Error("period_end cannot be before period_start")
+	}
+
+	payroll, err := b.repo.Payroll.Detail(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if payroll.RunPayroll {
+		return nil, common.Error("payroll already running, cannot update")
+	}
+
+	data := presentations.Payroll{
+		ID:          id,
+		PeriodStart: payload.PeriodStart,
+		PeriodEnd:   payload.PeriodEnd,
+		UpdatedBy:   userctx.Username,
+	}
+
+	err = b.repo.Payroll.Update(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+
+	data.CreatedBy = payroll.CreatedBy
+	data.CreatedAt = payroll.CreatedAt
+	data.UpdatedAt = time.Now()
+
+	return &data, nil
+}
+
+func (b *business) List(ctx context.Context, m *meta.Params) ([]presentations.Payroll, error) {
+
+	userctx := common.GetUserCtx(ctx)
+
+	return b.repo.Payroll.List(ctx, m, userctx.UserID)
 }
 
 func (b *business) RunningPayroll(ctx context.Context, payrollID string) error {
@@ -95,7 +147,7 @@ func (b *business) RunningPayroll(ctx context.Context, payrollID string) error {
 		}
 	}
 
-	err = b.repo.Payroll.Update(ctx, presentations.Payroll{
+	err = b.repo.Payroll.UpdatePayroll(ctx, presentations.Payroll{
 		ID:         payrollID,
 		RunPayroll: true,
 		UpdatedBy:  userctx.Username,

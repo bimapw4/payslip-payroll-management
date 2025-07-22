@@ -118,7 +118,7 @@ func TestCreatePayroll_Success(t *testing.T) {
 		Create(gomock.Any(), gomock.AssignableToTypeOf(presentations.Payroll{})).
 		Return(nil)
 
-	err := b.CreatePayroll(ctx, entity.Payroll{
+	_, err := b.CreatePayroll(ctx, entity.Payroll{
 		PeriodStart: time.Now(),
 		PeriodEnd:   time.Now().Add(time.Duration(3 * time.Minute)),
 	})

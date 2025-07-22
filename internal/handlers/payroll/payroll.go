@@ -16,6 +16,8 @@ type Handler interface {
 	Running(c *fiber.Ctx) error
 	GeneratePayslip(c *fiber.Ctx) error
 	SummaryPayslip(c *fiber.Ctx) error
+	List(c *fiber.Ctx) error
+	Update(c *fiber.Ctx) error
 }
 
 type handler struct {
@@ -46,7 +48,7 @@ func (h *handler) Create(c *fiber.Ctx) error {
 			JSON(c, fiber.StatusBadRequest)
 	}
 
-	err := h.business.Payroll.CreatePayroll(c.UserContext(), payload)
+	res, err := h.business.Payroll.CreatePayroll(c.UserContext(), payload)
 	if err != nil {
 		return response.NewResponse(Entity).
 			Errors("Failed create payroll", err).
@@ -54,7 +56,64 @@ func (h *handler) Create(c *fiber.Ctx) error {
 	}
 
 	return response.NewResponse(Entity).
-		Success("Success Create Payroll", nil).
+		Success("Success Create Payroll", res).
+		JSON(c, fiber.StatusOK)
+}
+
+func (h *handler) Update(c *fiber.Ctx) error {
+	var (
+		Entity = "UpdatePayroll"
+	)
+
+	if err := validation.Validate(c.Params("id"), is.UUID); err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed running payroll", err.Error()).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	var payload entity.Payroll
+	if err := c.BodyParser(&payload); err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	if err := payload.Validation(); err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	res, err := h.business.Payroll.UpdatePayroll(c.UserContext(), payload, c.Params("id"))
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed update payroll", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	return response.NewResponse(Entity).
+		Success("Success Update Payroll", res).
+		JSON(c, fiber.StatusOK)
+}
+
+func (h *handler) List(c *fiber.Ctx) error {
+	var (
+		Entity = "ListPayroll"
+	)
+
+	query := c.Queries()
+
+	m := meta.NewParams(query)
+
+	result, err := h.business.Payroll.List(c.UserContext(), &m)
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed List payroll", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	return response.NewResponse(Entity).
+		SuccessWithMeta("Success List Payroll", result, m).
 		JSON(c, fiber.StatusOK)
 }
 
