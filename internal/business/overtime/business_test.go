@@ -59,7 +59,7 @@ func TestBusiness_Overtime_Success(t *testing.T) {
 		Create(ctx, gomock.AssignableToTypeOf(presentations.Overtime{})).
 		Return(nil)
 
-	err := b.Overtime(ctx, input)
+	_, err := b.Overtime(ctx, input)
 	assert.NoError(t, err)
 }
 
@@ -98,7 +98,7 @@ func TestBusiness_Overtime_Failed(t *testing.T) {
 		EndTime:   end,
 	}
 
-	err := b.Overtime(ctx, input)
+	_, err := b.Overtime(ctx, input)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "overtime cannot more than 3 hours")
 }

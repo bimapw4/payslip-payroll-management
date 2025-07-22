@@ -12,7 +12,7 @@ import (
 )
 
 type Contract interface {
-	Overtime(ctx context.Context, payload entity.Overtime) error
+	Overtime(ctx context.Context, payload entity.Overtime) (*presentations.Overtime, error)
 }
 
 type business struct {
@@ -25,15 +25,15 @@ func NewBusiness(repo *repositories.Repository) Contract {
 	}
 }
 
-func (b *business) Overtime(ctx context.Context, payload entity.Overtime) error {
+func (b *business) Overtime(ctx context.Context, payload entity.Overtime) (*presentations.Overtime, error) {
 
 	if payload.GetDuration() > 3 {
-		return common.Error("overtime cannot more than 3 hours")
+		return nil, common.Error("overtime cannot more than 3 hours")
 	}
 
 	userctx := common.GetUserCtx(ctx)
 
-	err := b.repo.Overtime.Create(ctx, presentations.Overtime{
+	data := presentations.Overtime{
 		ID:        uuid.NewString(),
 		UserID:    userctx.UserID,
 		StartTime: payload.StartTime,
@@ -42,10 +42,12 @@ func (b *business) Overtime(ctx context.Context, payload entity.Overtime) error 
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		CreatedBy: userctx.Username,
-	})
-	if err != nil {
-		return err
 	}
 
-	return nil
+	err := b.repo.Overtime.Create(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
 }

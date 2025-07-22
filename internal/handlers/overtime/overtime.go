@@ -35,13 +35,13 @@ func (h *handler) Create(c *fiber.Ctx) error {
 			JSON(c, fiber.StatusBadRequest)
 	}
 
-	// if err := payload.Validation(); err != nil {
-	// 	return response.NewResponse(Entity).
-	// 		Errors("Failed to parse request body", err).
-	// 		JSON(c, fiber.StatusBadRequest)
-	// }
+	if err := payload.Validation(); err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to parse request body", err).
+			JSON(c, fiber.StatusBadRequest)
+	}
 
-	err := h.business.Overtime.Overtime(c.UserContext(), payload)
+	re, err := h.business.Overtime.Overtime(c.UserContext(), payload)
 	if err != nil {
 		return response.NewResponse(Entity).
 			Errors("Failed create overtime", err.Error()).
@@ -49,6 +49,6 @@ func (h *handler) Create(c *fiber.Ctx) error {
 	}
 
 	return response.NewResponse(Entity).
-		Success("Create Overtime Successfully", nil).
+		Success("Create Overtime Successfully", re).
 		JSON(c, fiber.StatusOK)
 }
