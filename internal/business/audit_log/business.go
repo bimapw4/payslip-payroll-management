@@ -2,7 +2,6 @@ package auditlog
 
 import (
 	"context"
-	"fmt"
 	"payslips/internal/presentations"
 	"payslips/internal/repositories"
 	"payslips/pkg/meta"
@@ -29,7 +28,6 @@ func (b *business) Create(ctx context.Context, input presentations.AuditLog) err
 		return err
 	}
 
-	fmt.Println("saada == ", err)
 	return nil
 }
 
