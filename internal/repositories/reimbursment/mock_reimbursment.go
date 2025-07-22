@@ -7,6 +7,7 @@ package reimbursment
 import (
 	context "context"
 	presentations "payslips/internal/presentations"
+	meta "payslips/pkg/meta"
 	reflect "reflect"
 	time "time"
 
@@ -78,6 +79,21 @@ func (m *MockReimbursment) FindByPayrollID(ctx context.Context, userID, payrollI
 func (mr *MockReimbursmentMockRecorder) FindByPayrollID(ctx, userID, payrollID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByPayrollID", reflect.TypeOf((*MockReimbursment)(nil).FindByPayrollID), ctx, userID, payrollID)
+}
+
+// List mocks base method.
+func (m_2 *MockReimbursment) List(ctx context.Context, m *meta.Params, userID string) ([]presentations.Reimbursement, error) {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "List", ctx, m, userID)
+	ret0, _ := ret[0].([]presentations.Reimbursement)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockReimbursmentMockRecorder) List(ctx, m, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockReimbursment)(nil).List), ctx, m, userID)
 }
 
 // Update mocks base method.

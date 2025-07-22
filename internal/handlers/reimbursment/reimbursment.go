@@ -5,6 +5,7 @@ import (
 	"payslips/internal/business"
 	"payslips/internal/entity"
 	"payslips/internal/response"
+	"payslips/pkg/meta"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -12,6 +13,7 @@ import (
 type Handler interface {
 	Create(c *fiber.Ctx) error
 	Update(c *fiber.Ctx) error
+	List(c *fiber.Ctx) error
 }
 
 type handler struct {
@@ -70,5 +72,27 @@ func (h *handler) Update(c *fiber.Ctx) error {
 
 	return response.NewResponse(Entity).
 		Success("Success Update Reimbursment", result).
+		JSON(c, fiber.StatusOK)
+}
+
+func (h *handler) List(c *fiber.Ctx) error {
+
+	var (
+		Entity = "ListReimbursment"
+	)
+
+	q := c.Queries()
+
+	m := meta.NewParams(q)
+
+	result, err := h.business.Reimbursment.List(c.UserContext(), &m)
+	if err != nil {
+		return response.NewResponse(Entity).
+			Errors("Failed to list reimbursment", err.Error()).
+			JSON(c, fiber.StatusBadRequest)
+	}
+
+	return response.NewResponse(Entity).
+		SuccessWithMeta("List Reimbursment Successfully", result, m).
 		JSON(c, fiber.StatusOK)
 }

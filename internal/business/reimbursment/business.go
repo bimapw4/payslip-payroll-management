@@ -6,6 +6,7 @@ import (
 	"payslips/internal/entity"
 	"payslips/internal/presentations"
 	"payslips/internal/repositories"
+	"payslips/pkg/meta"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,6 +16,7 @@ type Contract interface {
 	Create(ctx context.Context, payload entity.ReimbursementCreate) (*presentations.Reimbursement, error)
 	Update(ctx context.Context, payload entity.ReimbursementUpdate) (*presentations.Reimbursement, error)
 	Detail(ctx context.Context, Id string) (*presentations.Reimbursement, error)
+	List(ctx context.Context, m *meta.Params) ([]presentations.Reimbursement, error)
 }
 
 type business struct {
@@ -98,4 +100,11 @@ func (b *business) Detail(ctx context.Context, Id string) (*presentations.Reimbu
 	}
 
 	return reimburs, nil
+}
+
+func (b *business) List(ctx context.Context, m *meta.Params) ([]presentations.Reimbursement, error) {
+
+	userctx := common.GetUserCtx(ctx)
+
+	return b.repo.Reimbursement.List(ctx, m, userctx.UserID)
 }
