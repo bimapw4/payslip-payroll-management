@@ -76,7 +76,8 @@ Main tables:
 | GET    | `/payroll/generate/payslips/:id` | Generate payslip for user  |
 | GET    | `/payroll/summary/payslip/:id` | Get List payslip summary report for admin |
 
-this is the postman collection
+this is the postman collection 
+[Link Download](https://drive.google.com/drive/folders/1iH-8LSI9sTK90nx7k8IlPpeBDlHseTvC?usp=sharing)
 
 
 ### Testing
@@ -90,6 +91,18 @@ Run all tests:
 go test ./internal/... -v
 ```
 
+### 4. Run the Project
+Without Docker
+```
+go run main.go
+```
+#### or
+
+with docker
+```
+docker-compose build --no-cache
+docker-compose up
+``
 ### Technology Stack
 * Golang (1.21+)
 
