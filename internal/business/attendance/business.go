@@ -30,6 +30,11 @@ func NewBusiness(repo *repositories.Repository) Contract {
 
 func (b *business) Attendance(ctx context.Context, payload entity.AttendanceInput) error {
 
+	switch payload.Datetime.Weekday() {
+	case time.Saturday, time.Sunday:
+		return common.Error("cannot submit attendance on weekend")
+	}
+
 	attendanceType := map[string]func(ctx context.Context, payload entity.AttendanceInput) error{
 		consts.AttendanceCheckin: func(ctx context.Context, payload entity.AttendanceInput) error {
 			return b.checkIn(ctx, payload)
